@@ -1,0 +1,97 @@
+-- CTOR hive queries
+
+-- Creating Databse if not exists 
+
+CREATE DATABASE IF NOT EXISTS capstone_project
+WITH DBPROPERTIES ('Creator' = 'Geet Pandya', 'Purpose' = 'Jigsaw Capstone Project');
+
+-- Use database for project
+
+USE capstone_project;
+
+--Creating Hive Table
+
+CREATE EXTERNAL TABLE IF NOT EXISTS capstone_project.ctor (
+  id INT,
+  mailid INT,
+  mailcat STRING,
+  day STRING,
+  datemail STRING,
+  click STRING,
+  open STRING,
+  age INT,
+  gencode STRING,
+  houcode STRING,
+  income STRING,
+  asncode STRING,
+  time STRING,
+  month STRING,
+  salgrp STRING,
+  ethni STRING,
+  houhld STRING)
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY '|'
+LOCATION '/user/capstonproj';
+
+--Loading data
+
+LOAD DATA LOCAL INPATH '/home/hduser/Documents/assignment/pigoutput'
+OVERWRITE INTO TABLE ctor;
+
+
+-- A. Overall CTOR
+
+DROP TABLE IF EXISTS overall_ctor;
+CREATE TABLE overall_ctor AS SELECT ROUND(SUM(CASE 
+WHEN click =  'Y' THEN 1 ELSE 0
+END)/count(*) *100,2) CTOR FROM ctor WHERE open = 'Y'; 
+
+--B. CTOR by gender
+
+DROP TABLE IF EXISTS gender_ctor;
+CREATE TABLE gender_ctor AS SELECT gencode, ROUND(SUM(CASE 
+WHEN click =  'Y' THEN 1 ELSE 0
+END)/count(*) *100,2) CTOR FROM ctor WHERE open = 'Y' GROUP BY gencode;
+
+--C. CTOR by time of the week
+
+DROP TABLE IF EXISTS time_ctor;
+CREATE TABLE time_ctor AS SELECT time, ROUND(SUM(CASE 
+WHEN click =  'Y' THEN 1 ELSE 0
+END)/count(*) *100,2) CTOR FROM ctor WHERE open = 'Y' GROUP BY time;
+
+--D. CTOR by day of the week
+
+DROP TABLE IF EXISTS day_ctor;
+CREATE TABLE day_ctor AS SELECT day, ROUND(SUM(CASE 
+WHEN click =  'Y' THEN 1 ELSE 0
+END)/count(*) *100,2) CTOR FROM ctor WHERE open = 'Y' GROUP BY day;
+
+-- E. CTOR by month
+
+DROP TABLE IF EXISTS month_ctor;
+CREATE TABLE month_ctor AS SELECT month, ROUND(SUM(CASE 
+WHEN click =  'Y' THEN 1 ELSE 0
+END)/count(*) *100,2) CTOR FROM ctor WHERE open = 'Y' GROUP BY month;
+
+-- F. CTOR by income group 
+
+DROP TABLE IF EXISTS salgrp_ctor;
+CREATE TABLE salgrp_ctor AS SELECT income, salgrp, ROUND(SUM(CASE 
+WHEN click =  'Y' THEN 1 ELSE 0
+END)/count(*) *100,2) CTOR FROM ctor WHERE open = 'Y' GROUP BY income, salgrp;
+
+-- G. CTOR by lead's ethnicity
+
+DROP TABLE IF EXISTS ethnicity_ctor;
+CREATE TABLE ethnicity_ctor AS SELECT asncode, ethni, ROUND(SUM(CASE 
+WHEN click =  'Y' THEN 1 ELSE 0
+END)/count(*) *100,2) CTOR FROM ctor WHERE open = 'Y' GROUP BY asncode, ethni;
+
+-- H. CTOR by Lead's household status
+
+DROP TABLE IF EXISTS status_ctor;
+CREATE TABLE status_ctor AS SELECT houcode, houhld, ROUND(SUM(CASE 
+WHEN click =  'Y' THEN 1 ELSE 0
+END)/count(*) *100,2) CTOR FROM ctor WHERE open = 'Y' GROUP BY houcode, houhld;
+ 
