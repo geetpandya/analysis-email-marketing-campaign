@@ -1,4 +1,4 @@
-# analysis-email-marketing-campaign-
+# analysis-email-marketing-campaign
 Analysis an email marketing campaign dataset with 20,000 rows and 192 columns and automated the ETL process using Pig &amp; Hive. The primary purpose is to find the click-to-open-ratio (CTOR) based on different categories. Pig is used for ETL process and Hive is used for querying the data.
 
 Prerequisites:
